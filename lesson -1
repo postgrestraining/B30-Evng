@@ -1,0 +1,272 @@
+Set-up Environment
+------------------
+
+1. Decide on VPC name and create a new VPC. For this class VPC name is B30-VPC and IP Address space we are going to use is 10.81.0.0/16 =>65000 IPs. 
+Enable DNS Hostnames.
+
+2. Create three subnets in AWS-B21.Enable automatic IP Assignment.
+
+B30-SN1 - 10.81.1.0/24 -1a
+B30-SN2 - 10.81.2.0/24 -1b
+B30-SN3 - 10.81.3.0/24 -1c
+
+3. Create internet gateway and attach it to VPC. IGW name is B30-IGW.
+
+4. Create new routing table for B30-RT and assosiate subnets to it. Ignore the default routing table.
+
+5. Add routes in the routing table towards Internet Gateway.
+
+6. Create a security group B30-SG and allow all in bound ports (Traffic should be "All traffic"). 
+
+7. Go to EC2 -> Create a Key-Pair (B30.pem) and download the .pem file, Use puttygen to create private key.
+
+8. Deploy two Linux t2.micro instance (ami-00a278f409563b387), one in Subnet 1 and another in subnet 2, and connect to it using private key u have created.
+
+Public and Private subnets 
+---------------------------
+
+1. Create Elastic IP
+2. Create NAT gateway (Choose Public subnet and EIP) 
+3. Remove SN2 and SN3 subnets from B30-RT
+4. Check direct connectivity your laptop to SN2 CentOS machine don't work
+5. Login to second machine with -i option from machine 1 and ping google.com
+
+[centos@ip-10-81-1-168 ~]$ vi b30.pem
+[centos@ip-10-81-1-168 ~]$ chmod 600 b30.pem
+[centos@ip-10-81-1-168 ~]$ ssh -i b30.pem centos@10.81.2.67
+
+[centos@ip-10-81-2-67 ~]$ ping google.com
+PING google.com (142.251.163.102) 56(84) bytes of data.
+
+6. Create B30-PVT-RT
+7. Add SN2 and SN3 + NatGateway
+8. Ensure internet is working.
+
+VPC - Peering
+--------------
+
+1. Switch to ohio
+2. Create B30-VPC-OHIO(172.25.0.0/16) and Enable DNS Hostnames.
+3. Create one subnet (B30-SN1-OHIO: 172.25.1.0/24)
+4. Create Internet Gateway (B30-OHIO-RT)
+5. Create RT and add subnets and IGW
+6. Create security groups, key pair and create instance (ami-01f4d452f272644be) as above.
+
+- Go to First region, create VPC Peering
+- Go to second region, accept the Peering
+- Modify route table., add entry of another region CIDR with PEERING traffic.
+
+Automation
+-----------
+
+1. CloudFormation -> vpc.yml -> Stack name:  B30
+     
+    - It creates a VPC, subnets, RT, and IGW
+    - Note down comma separated public IPs
+    subnet-03892171e1bfafdb4,subnet-020c6fa943225d766
+  
+2. CloudFormation -> security-groups.yml -> Stack name: B30-SG, Choose VPC-ID
+
+3. CloudFormation -> rds.yml -> Stakc name: my-rds,
+    
+    DBInstanceName	my-rds
+    PublicSubnets	subnet-03892171e1bfafdb4,subnet-020c6fa943225d766
+    SecurityGroupId	sg-02bcfb5e65d932650
+    VPCID	vpc-0ef9e9bf683477c6c
+    
+    # it creates a 
+        i) DBSubnetGroup called "my-rds-db-subnet-group" which we use in next exercise.
+       ii) RDS instance with name "my-rds" 
+   
+4. CloudFormation -> aurora-cluster-dbgroup-hard-code.yml -> Stakc name: my-aurora
+  
+    DBEngineVersion	        15.3
+    DBInstanceClass	        db.t3.medium
+    DBMasterUsername	    postgres
+    DBMasterUserPassword	postgres
+    PublicSubnets	        subnet-03892171e1bfafdb4,subnet-020c6fa943225d766
+    RdsAuroraVPC	        vpc-0ef9e9bf683477c6c
+    TemplateName	        rdsa-postgresql
+    VPCSecurityGroupCluster	sg-02bcfb5e65d932650  
+   
+    # it creates 
+        i) aurora cluster with name "rdsa-postgresql-cluster" 
+       ii) aurora writer instance with name "rdsa-postgresql-node-01"
+ 
+5. Create replica for above machine
+
+   CloudFormation -> postgres-cluster-replica -> stack name : rdsa-postgresql-node-02
+   
+    DBCluster	rdsa-postgresql-cluster
+    DBEngineVersion	15.3
+    DBInstanceClass	db.t3.medium
+    ReplicaNodeName	rdsa-postgresql-node-02
+    TemplateName	rdsa-postgresql-replica
+
+--> configure aws in cli
+
+[postgres@lab01 aws]$ aws configure
+AWS Access Key ID [****************X6HF]: AKIA3TW7NMA
+AWS Secret Access Key [****************KpaT]: x4Fon9VH6kGGViCxIqP
+Default region name [us-east-1]:
+Default output format [None]:
+[postgres@lab01 aws]$
+
+yum install jq
+
+## delete node-02 read replica
+
+cd /home/postgres/db
+sh delete-replica.sh node-02
+
+## create a new replica
+
+[postgres@lab01 db]$ sh create-replica.sh node-02
+DB Replica Node Name=rdsa-postgresql-node-02
+DB Instance Type=db.t3.medium
+DB Engine Version=15.3
+{
+    "StackId": "arn:aws:cloudformation:us-east-1:798258716674:stack/rdsa-postgresql-node-02/4a453f20-c9c0-11ee-afcf-12ef7e778a2f"
+}
+.
+
+## delete node-02 read replica
+
+[postgres@lab01 db]$ sh create-replica.sh node-02
+DB Replica Node Name=rdsa-postgresql-node-02
+DB Instance Type=db.t3.medium
+DB Engine Version=15.3
+{
+    "StackId": "arn:aws:cloudformation:us-east-1:798258716674:stack/rdsa-postgresql-node-02/4a453f20-c9c0-11ee-afcf-12ef7e778a2f"
+}
+.........................
+Done.
+[postgres@lab01 db]$ sh delete-replica.sh node-02
+Are you sure, you want to DELETE the replica stack [rdsa-postgresql-node-02] ?yes
+Be aware that sometimes, the stack deletion fails !!
+NOTE: It is your responsibility to ensure that the DB node is successfully deleted.
+.........
+
+parameter groups
+----------------
+DB instance parameter group:  default.aurora-postgresql15
+DB cluster parameter group: default.aurora-postgresql15
+
+export PG_CLUSTER_ID=rdsa-postgresql-cluster
+sh create-custom-db-cluster-pg.sh rdsa-cluster-pg-cluster my-cluster-parameter-group
+sh create-custom-db-pg.sh rdsa-instance-pg my-parameter-group
+
+[postgres@lab01 db]$ vi create-custom-db-cluster-pg.sh
+[postgres@lab01 db]$ export PG_CLUSTER_ID=rdsa-postgresql-cluster
+[postgres@lab01 db]$ sh create-custom-db-cluster-pg.sh rdsa-cluster-pg-cluster my-cluster-parameter-group
+Create the DB Parameter Group: rdsa-cluster-pg-cluster
+                       Family: aurora-postgresql15
+{
+    "DBClusterParameterGroup": {
+        "DBClusterParameterGroupName": "rdsa-cluster-pg-cluster",
+        "DBParameterGroupFamily": "aurora-postgresql15",
+        "Description": "my-cluster-parameter-group",
+        "DBClusterParameterGroupArn": "arn:aws:rds:us-east-1:798258716674:cluster-pg:rdsa-cluster-pg-cluster"
+    }
+}
+Documentation suggests waiting for 5 minutes before applying the
+newly created custom Parameter Groups to a DB cluster.
+Done.
+[postgres@lab01 db]$ sh create-custom-db-pg.sh rdsa-instance-pg my-parameter-group
+Create the DB Parameter Group: rdsa-instance-pg
+                       Family: aurora-postgresql15
+{
+    "DBParameterGroup": {
+        "DBParameterGroupName": "rdsa-instance-pg",
+        "DBParameterGroupFamily": "aurora-postgresql15",
+        "Description": "my--parameter-group",
+        "DBParameterGroupArn": "arn:aws:rds:us-east-1:798258716674:pg:rdsa-instance-pg"
+    }
+}
+Documentation suggests waiting for 5 minutes before applying the
+newly created custom Parameter Groups to a DB cluster.
+Done.
+[postgres@lab01 db]$
+
+## apply changes
+
+aws rds modify-db-instance \
+--db-instance-identifier  rdsa-postgresql-node-01 \
+--db-parameter-group-name rdsa-instance-pg \
+--apply-immediately
+
+aws rds modify-db-cluster \
+--db-cluster-identifier rdsa-postgresql-cluster \
+--db-cluster-parameter-group-name rdsa-cluster-pg-cluster \
+--apply-immediately
+
+aws rds reboot-db-cluster --db-cluster-identifier rdsa-postgresql-cluster (If apply immediately not used)
+
+### change values
+
+
+[postgres@lab01 db]$ psql -h rdsa-postgresql-cluster.cluster-cijxwe4ckz1m.us-east-1.rds.amazonaws.com -c "show work_mem;"                                     Password for user postgres:
+ work_mem
+----------
+ 4MB
+(1 row)
+
+[postgres@lab01 db]$ sh set-parameter-value.sh rdsa-cluster-pg-cluster work_mem 40960
+Setting in DB Parameter Group: rdsa-cluster-pg-cluster
+                        work_mem=40960
+{
+    "DBClusterParameterGroupName": "rdsa-cluster-pg-cluster"
+}
+Done.
+[postgres@lab01 db]$
+
+##operation: cannot use immediate apply method for static parameter
+
+## modify db.t3.medium	-> db.t3.large
+sh modify-db-cluster-instance.sh rdsa-postgresql-node-01 db.t3.large
+
+IAM authentication
+-------------------
+https://www.youtube.com/watch?v=ihAgMHP3jPk
+https://repost.aws/knowledge-center/rds-postgresql-connect-using-iam
+
+[root@lab01 iam]#  ./setup-iam-role.sh  798258716674 cluster-LCAGF6JUNCSIQ353XHBSKVXJDU
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "rds-db:connect"
+      ],
+      "Resource": [
+        "arn:aws:rds-db:us-east-1:798258716674:dbuser:cluster-LCAGF6JUNCSIQ353XHBSKVXJDU/iam_dbuser"
+      ]
+    }
+  ]
+}
+Is IAM Policy looking Good? [y/N] y
+Proceeding with Policy creation.
+IAM_DBUSER_POLICY ARN=arn:aws:iam::798258716674:policy/rdsa-iam-dbuser-policy
+IAM_DBUSER_ROLE Arn=arn:aws:iam::798258716674:role/rdsa-iam-dbuser-role
+Attaching the DBUSER policy to DBUSER role
+
+
+aws rds generate-db-auth-token --hostname $RDSHOST --port 5432 --region us-east-1 --username iam_dbuser
+database-1.cluster-cijxwe4ckz1m.us-east-1.rds.amazonaws.com:5432/?Action=connect&DBUser=iam_dbuser&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA3TW7NMABPBDMAGOE%2F20240211%2Fus-east-1%2Frds-db%2Faws4_request&X-Amz-Date=20240211T182334Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=fbfe2149fa603f8c0341454777bd68ffb8fa8f839ca27bb125bf62d79e37712c
+
+
+[postgres@lab01 iam]$ aws rds generate-db-auth-token --hostname $RDSHOST --port 5432 --region us-east-1 --username iam_dbuser
+database-1.cluster-cijxwe4ckz1m.us-east-1.rds.amazonaws.com:5432/?Action=connect&DBUser=iam_dbuser&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA3TW7NMABPBDMAGOE%2F20240211%2Fus-east-1%2Frds-db%2Faws4_request&X-Amz-Date=20240211T182334Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=fbfe2149fa603f8c0341454777bd68ffb8fa8f839ca27bb125bf62d79e37712c
+[postgres@lab01 iam]$
+[postgres@lab01 iam]$
+[postgres@lab01 iam]$ psql -h database-1.cluster-cijxwe4ckz1m.us-east-1.rds.amazonaws.com -d postgres -w -U iam_dbuser
+psql (16.1, server 15.4)
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, compression: off)
+Type "help" for help.
+
+postgres=> \q
+[postgres@lab01 iam]$
+
+
+https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_VPC.Scenarios.html
