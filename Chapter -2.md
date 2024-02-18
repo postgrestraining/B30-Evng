@@ -132,10 +132,12 @@ Commit complete.
 ## Install PostgreSQL Client
 
 ```
+useradd postgres
 dnf install postgresql15.x86_64 postgresql15-server -y
 
 [ec2-user@ip-10-1-1-250 ~]$ sudo su
 [root@ip-10-1-1-250 ec2-user]# cd
+[root@ip-10-1-1-250 ~]# useradd postgres
 [root@ip-10-1-1-250 ~]# dnf install postgresql15.x86_64 postgresql15-server -y
 ..
 ..
@@ -157,9 +159,20 @@ Default output format [None]:
 [postgres@ip-10-1-1-250 ~]$
 ```
 
+## set up environment variables
 
+```
+cd /home/postgres/B30-Evng-main/db
+sh setup-env.sh us-east-1
+sh set-endpoints.sh rdsa-postgresql-cluster
 
+Sample output should look like and look for entries in /home/postgres/.bashrc
 
+[postgres@ip-10-1-1-250 db]$ sh set-endpoints.sh rdsa-postgresql-cluster
+PGWRITEREP=rdsa-postgresql-cluster.cluster-cijxwe4ckz1m.us-east-1.rds.amazonaws.com
+PGREADEREP=rdsa-postgresql-cluster.cluster-ro-cijxwe4ckz1m.us-east-1.rds.amazonaws.com
+[postgres@ip-10-1-1-250 db]$
+```
 
 
 
