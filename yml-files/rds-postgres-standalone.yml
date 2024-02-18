@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  DBInstanceName:
+    Type: String
+    Description: Name for the RDS instance
+
+  SecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Security Group ID for the RDS instance
+
+  VPCID:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID where the resources will be created
+
+Resources:
+  PrimaryDBInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      AllocatedStorage: 20  # Adjust as needed
+      DBInstanceIdentifier: !Ref DBInstanceName
+      Engine: 'postgres'
+      EngineVersion: '15.3'  # Adjust as needed
+      MasterUsername: postgres
+      MasterUserPassword: postgres
+      MultiAZ: false  # Set to true for Multi-AZ deployment
+      VPCSecurityGroups: [!Ref SecurityGroupId]
+      PubliclyAccessible: Yes
+      DBSubnetGroupName: b30-db-subnet-group
+      DBInstanceClass: db.t3.medium
+
+Outputs:
+  PrimaryDBEndpoint:
+    Description: 'Endpoint of the primary RDS instance'
+    Value: !GetAtt PrimaryDBInstance.Endpoint.Address
+

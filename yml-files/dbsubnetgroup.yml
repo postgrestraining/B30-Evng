@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  SecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Security Group ID for the RDS instance
+
+  VPCID:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID where the resources will be created
+    
+  # Subnets for the cluster
+  PublicSubnets:
+    Type: String
+    Description: Comma Separated IDs of a Public subnets for RDS PG.
+
+Resources:
+  DBSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: b30-db-subnet-group
+      DBSubnetGroupName: my-db-subnet-group
+      SubnetIds: !Split [',', !Ref PublicSubnets] 
+      Tags:
+        - Key: Name
+          Value: my-db-subnet-group

@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  VPCID:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID where the security group will be created
+Resources:
+  AllowAllInboundSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupName: 'B30-SG'
+      GroupDescription: 'Security group allowing all inbound traffic'
+      VpcId: !Ref VPCID
+      SecurityGroupIngress:
+        - IpProtocol: '-1'
+          CidrIp: '0.0.0.0/0'
+      Tags:
+        - Key: 'Name'
+          Value: 'B30-SG'
+        - Key: 'Environment'
+          Value: 'Production'  # Adjust this as needed
+Outputs:
+  SecurityGroupID:
+    Description: 'Security Group ID'
+    Value: !Ref AllowAllInboundSecurityGroup
