@@ -1,0 +1,52 @@
+1. CloudFormation -> vpc.yml -> Stack name:  B30 -> Next -> Next -> Finish
+     
+    - It creates a VPC (B30-VPC), subnets (B30-SN1, B30-SN2) , RT (B30-RT), and IGW (B30-igw)
+    - Note down comma separated public subnets
+      subnet-0a4b8683b58e9347b,subnet-0d412ac0d03348979
+  
+2. CloudFormation -> security-groups.yml -> Stack name: B30-SG, Choose VPC-ID -> Next -> Next -> Finish
+
+     - It creates a security Group (B30-SG) 
+
+3. CloudFormation -> dbsubnetgroup.yml -> Stakc name: my-db-subnet-group 
+     -> Give rest of the details -> Next -> Next -> Finish
+
+     - Go to RDS -> See Subnet Groups -> Check of my-db-subnet-group is created.
+
+3. CloudFormation -> rds-oracle-standalone -> Stakc name: my-oracle
+    
+     DBInstanceName	     orcl
+     SecurityGroupId	sg-036245adc952ca77c
+     VPCID	          vpc-0256ad07c6ecf51e3
+    
+    # it creates a 
+        i) DBSubnetGroup called "my-rds-db-subnet-group" which we use in next exercise.
+       ii) RDS instance with name "my-rds" 
+   
+4. CloudFormation -> postgres-cluster-dbgroup-hard-code.yml -> Stakc name: my-aurora
+    ###please open aurora-cluster-dbgroup-hard-code.yml and make sure the 
+    ###hardcoded "subnetgroup" matches with existing subnet group created with above step
+    ###RDS -> Subnet groups -> check
+  
+     DBEngineVersion	15.3
+     DBInstanceClass	db.t3.medium
+     DBMasterUsername	postgres
+     DBMasterUserPassword	postgres
+     RdsAuroraVPC	vpc-0256ad07c6ecf51e3
+     TemplateName	rdsa-postgresql
+     VPCSecurityGroupCluster	sg-036245adc952ca77c
+   
+    # it creates 
+        i) aurora cluster with name "rdsa-postgresql-cluster" 
+       ii) aurora writer instance with name "rdsa-postgresql-node-01"
+ 
+5. Create replica for above machine
+
+   CloudFormation -> postgres-cluster-replica -> stack name : rdsa-postgresql-node-02
+   DBCluster -> rdsa-postgresql-cluster
+   
+    DBCluster	rdsa-postgresql-cluster
+    DBEngineVersion	15.3
+    DBInstanceClass	db.t3.medium
+    ReplicaNodeName	rdsa-postgresql-node-02
+    TemplateName	rdsa-postgresql-replica
