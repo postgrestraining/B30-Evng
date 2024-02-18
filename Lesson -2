@@ -1,0 +1,177 @@
+sh set-endpoints.sh
+sh setup-env.sh us-east-1
+
+[postgres@lab01 ~]$ env | grep PG
+PG_CLUSTER_ID=rdsa-postgresql-cluster
+PGPASSWORD=postgres
+PGWRITEREP=rdsa-postgresql-cluster.cluster-cijxwe4ckz1m.us-east-1.rds.amazonaws.com
+PGDATABASE=postgres
+PGHOST=rdsa-postgresql-cluster.cluster-cijxwe4ckz1m.us-east-1.rds.amazonaws.com
+PGREADEREP=rdsa-postgresql-cluster.cluster-ro-cijxwe4ckz1m.us-east-1.rds.amazonaws.com
+PGUSER=postgres
+PGTOOLS_ROOT=/home/postgres/pgbench-tools
+PGPORT=5432
+[postgres@lab01 ~]$ psql -h $PGWRITEREP
+psql (16.1, server 15.3)
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, compression: off)
+Type "help" for help.
+
+
+-> CloudWatch -> Dashboards -> Automatic Dashboards -> rds
+-> Custom Dashboard -> Left side -> Metrics -> RDS -> DBClusteridentifier -> IOPS -> Actions ->
+add to custom Dashboard
+-> CloudWatch(38)
+
+-> set alarm using SNS (Try on your own)
+
+Enhanced monitoring
+--------------------
+Go to instance -> Monitoring -> See "Enhanced monitoring is disabled"
+-> Enable it in console
+-> see "enhaned monitoring getting enabled"
+
+Alert logs
+----------
+1. Events -> Try yourself
+2. Logs -> Check
+
+Vertical Scaling
+-----------------
+increase instance class and meanwhile check read instance is becoming writer instance.
+
+Horizental Scaling
+-------------------
+Logs & Events -> Auto scaling policies -> Enable
+
+/usr/pgsql-16/bin/pgbench -h rdsa-postgresql-node-02.cijxwe4ckz1m.us-east-1.rds.amazonaws.com -c 50 -T 200 postgres -S -n -P 3
+
+Failovers
+---------
+##Replica Failover
+
+aws rds failover-db-cluster --db-cluster-identifier rdsa-postgresql-cluster
+
+[postgres@lab01 db]$ sh dbcluster-dig.sh
+^C to stop the script.
+5 s  :  Writer IP=34.197.184.249   Reader IP=184.73.118.132
+10 s  :  Writer IP=34.197.184.249   Reader IP=184.73.118.132
+15 s  :  Writer IP=34.197.184.249   Reader IP=184.73.118.132
+***WRITER EP - IP Changed - 34.197.184.249  > 184.73.118.132
+20 s  :  Writer IP=184.73.118.132   Reader IP=184.73.118.132
+25 s  :  Writer IP=184.73.118.132   Reader IP=184.73.118.132
+***WRITER EP - IP Changed - 184.73.118.132  > 34.197.184.249
+30 s  :  Writer IP=34.197.184.249   Reader IP=184.73.118.132
+
+Enabling cluster cache management (Try yourself)
+-------------------------------------
+To enable cluster cache management
+Sign in to the AWS Management Console and open the Amazon RDS console at https://console.aws.amazon.com/rds/.
+
+In the navigation pane, choose Parameter groups.
+
+In the list, choose the parameter group for your Aurora PostgreSQL DB cluster.
+
+The DB cluster must use a parameter group other than the default, because you can't change values in a default parameter group.
+
+For Parameter group actions, choose Edit.
+
+Set the value of the apg_ccm_enabled cluster parameter to 1.
+
+Choose Save changes.
+
+Cli for cluster cache management (Try yourself)
+----------------------------------
+aws rds modify-db-cluster-parameter-group \
+    --db-cluster-parameter-group-name my-db-cluster-parameter-group \
+    --parameters "ParameterName=apg_ccm_enabled,ParameterValue=1,ApplyMethod=immediate"
+    
+Export table data to S3 (Try yourself)
+
+
+Backup and Recovery
+--------------------
+
+my-aurora-test-node-01.cijxwe4ckz1m.us-east-1.rds.amazonaws.com
+
+my-aurora-test-cluster
+my-aurora-test-node-01
+
+
+aws rds create-db-cluster-snapshot \
+--db-cluster-identifier my-aurora-test-cluster \
+--db-cluster-snapshot-identifier my-cluster-snapshot
+
+aws rds describe-db-cluster-snapshots \
+--db-cluster-snapshot-identifier my-cluster-snapshot
+
+aws rds describe-db-cluster-snapshots \
+--db-cluster-snapshot-identifier my-cluster-snapshot |  jq '.DBClusterSnapshots[] | {PercentProgress}'
+
+aws rds delete-db-cluster-snapshot \
+    --db-cluster-snapshot-identifier my-cluster-snapshot
+	
+aws rds restore-db-cluster-from-snapshot \
+    --db-cluster-identifier my-aurora-test-cluster-restore \
+    --snapshot-identifier my-cluster-snapshot \
+    --engine aurora-postgresql\
+    --engine-version 15.3	
+	
+Amazon RDS creates a storage volume snapshot of your DB cluster, backing up the entire DB cluster and not just individual databases. You can create a new DB cluster by restoring from a DB snapshot. You provide the name of the DB cluster snapshot to restore from, and then provide a name for the new DB cluster that is created from the restore. You can't restore from a DB cluster snapshot to an existing DB cluster; a new DB cluster is created when you restore.	
+https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-restore-snapshot.html
+
+Point in time recovery
+-----------------------
+
+postgres=> create table pitr (id int,tm timestamp default now());
+CREATE TABLE
+postgres=>
+postgres=> insert into pitr values(1);
+INSERT 0 1
+postgres=> select * from pitr;
+ id |             tm
+----+----------------------------
+  1 | 2024-02-13 16:14:47.455217
+(1 row)
+
+postgres=>
+
+Take snapshot
+--------------
+aws rds create-db-cluster-snapshot \
+--db-cluster-identifier my-aurora-test-cluster \
+--db-cluster-snapshot-identifier my-pitr-snapshot
+
+
+postgres=> insert into pitr values(3);
+INSERT 0 1
+postgres=> select * from pitr;
+ id |             tm
+----+----------------------------
+  1 | 2024-02-13 16:14:47.455217
+  2 | 2024-02-13 16:20:26.705778
+  3 | 2024-02-13 16:24:31.990599
+(3 rows)
+
+postgres=>
+
+aws rds describe-db-clusters --db-cluster-identifier my-aurora-test-cluster  |  jq '.DBClusters[] | {LatestRestorableTime}'
+
+aws rds restore-db-cluster-to-point-in-time \
+    --source-db-cluster-identifier my-aurora-test-cluster \
+    --db-cluster-identifier my-aurora-test-pitr \
+    --restore-to-time 2024-02-13T16:22:01.000Z
+
+## try from console as well.
+
+Extensions
+-------------
+1. pg_stat_statements
+
+    - sample queries
+    
+Aurora cloning : Do it in console
+    
+Tuning Wait Events
+https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Tuning.html
+
+Aurora Global database (Try yourself)
