@@ -20,7 +20,7 @@ B30-SN3 - 10.81.3.0/24 -1c
 
 7. Go to EC2 -> Create a Key-Pair (B30.pem) and download the .pem file, Use puttygen to create private key.
 
-8. Deploy two Linux t2.micro instance (ami-00a278f409563b387), one in Subnet 1 and another in subnet 2, and connect to it using private key u have created.
+8. Deploy two Linux t2.micro instance (ami-0e731c8a588258d0d), one in Subnet 1 and another in subnet 2, and connect to it using private key u have created.
 
 Public and Private subnets 
 ---------------------------
