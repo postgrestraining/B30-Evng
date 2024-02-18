@@ -69,7 +69,7 @@ Automation
 
      - It creates a security Group (B30-SG) 
 
-3. CloudFormation -> dbsubnetgroup.yml -> Stakc name: b30-db-subnet-group 
+3. CloudFormation -> dbsubnetgroup.yml -> Stakc name: my-db-subnet-group 
      -> Give rest of the details -> Next -> Next -> Finish
 
      - Go to RDS -> See Subnet Groups -> Check of my-db-subnet-group is created.
