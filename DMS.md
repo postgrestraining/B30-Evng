@@ -55,7 +55,6 @@ In DMS,
 3. Create source endpoint -> Most of the details are auto populated and Test endpoint connection
 4. Create target endpoint -> SSL Socket layer mode -> Require;  Most of the details are auto populated and Test endpoint connection
 5. Select Source -> Schemas -> Refresh to populate schemas
-6. Create migration task
-   Task identifier - ora2pg
-   Migration type - Migrate existing data and replicate ongoing change
+6. Create migration task -> Task identifier - ora2pg -> Migration type - Migrate existing data and replicate ongoing change
+   
 
