@@ -74,18 +74,15 @@ Automation
 
      - Go to RDS -> See Subnet Groups -> Check of my-db-subnet-group is created.
 
-3*. CloudFormation -> rds.yml -> Stakc name: my-rds, [OPTIONAL]
+3. CloudFormation -> rds-oracle-standalone -> Stakc name: my-oracle
     
-    DBInstanceName	my-rds
-    PublicSubnets	subnet-03892171e1bfafdb4,subnet-020c6fa943225d766
-    SecurityGroupId	sg-02bcfb5e65d932650
-    VPCID	vpc-0ef9e9bf683477c6c
+     DBInstanceName	     orcl
+     SecurityGroupId	sg-036245adc952ca77c
+     VPCID	          vpc-0256ad07c6ecf51e3
     
     # it creates a 
         i) DBSubnetGroup called "my-rds-db-subnet-group" which we use in next exercise.
        ii) RDS instance with name "my-rds" 
-   
-   rdsa-postgresql-db-subnet-group
    
 4. CloudFormation -> postgres-cluster-dbgroup-hard-code.yml -> Stakc name: my-aurora
     ###please open aurora-cluster-dbgroup-hard-code.yml and make sure the 
@@ -107,6 +104,7 @@ Automation
 5. Create replica for above machine
 
    CloudFormation -> postgres-cluster-replica -> stack name : rdsa-postgresql-node-02
+   DBCluster -> rdsa-postgresql-cluster
    
     DBCluster	rdsa-postgresql-cluster
     DBEngineVersion	15.3
