@@ -57,4 +57,46 @@ In DMS,
 5. Select Source -> Schemas -> Refresh to populate schemas
 6. Create migration task -> Task identifier - ora2pg -> Migration type - Migrate existing data and replicate ongoing change
    
+## Verify
+```
+Source
+
+SQL> select * from jobs where JOB_ID='AD_PRES';
+
+JOB_ID     JOB_TITLE                           MIN_SALARY MAX_SALARY
+---------- ----------------------------------- ---------- ----------
+AD_PRES    President                                20080      40000
+
+SQL> update  jobs set MAX_SALARY=300 where JOB_ID='AD_PRES';
+
+1 row updated.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> EXEC rdsadmin.rdsadmin_util.switch_logfile;
+
+PL/SQL procedure successfully completed.
+
+
+Destination
+
+postgres=> select * from hr.jobs where JOB_ID='AD_PRES';
+ job_id  | job_title | min_salary | max_salary
+---------+-----------+------------+------------
+ AD_PRES | President |      20080 |      40000
+(1 row)
+
+postgres=>
+postgres=>
+postgres=> select * from hr.jobs where JOB_ID='AD_PRES';
+ job_id  | job_title | min_salary | max_salary
+---------+-----------+------------+------------
+ AD_PRES | President |      20080 |        300
+(1 row)
+```
+
+
+
 
