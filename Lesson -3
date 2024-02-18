@@ -19,7 +19,7 @@ select 'ALTER TABLE '||table_name||' ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;' f
 
 -- check
 
-exec rdsadmin.rdsadmin_util.set_configuration('archivelog retention hours',24);
+EXEC rdsadmin.rdsadmin_util.switch_logfile;
 
 
 sudo yum install -y yum-utils
