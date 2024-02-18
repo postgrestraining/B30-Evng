@@ -1,0 +1,35 @@
+ami-0e731c8a588258d0d
+
+wget https://yum.oracle.com/RPM-GPG-KEY-oracle-ol8 -O /etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+
+dnf install https://download.oracle.com/otn_software/linux/instantclient/1921000/oracle-instantclient19.21-basic-19.21.0.0.0-1.x86_64.rpm
+
+dnf install https://download.oracle.com/otn_software/linux/instantclient/1921000/oracle-instantclient19.21-basic-19.21.0.0.0-1.x86_64.rpm
+
+sqlplus admin/oracle123@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=orcl.cijxwe4ckz1m.us-east-1.rds.amazonaws.com)(PORT=1521)))(CONNECT_DATA=(SID=ORCL)))
+
+exec rdsadmin.rdsadmin_util.set_configuration('archivelog retention hours',24);
+exec rdsadmin.rdsadmin_util.alter_supplemental_logging('ADD');
+exec rdsadmin.rdsadmin_util.alter_supplemental_logging('ADD','PRIMARY KEY');
+
+dnf install postgresql15.x86_64 postgresql15-server -y
+
+select 'ALTER TABLE '||table_name||' ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;' from all_tables where owner = 'HR';
+
+-- check
+
+exec rdsadmin.rdsadmin_util.set_configuration('archivelog retention hours',24);
+
+
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+sudo yum -y install terraform
+
+ terraform init
+  terraform plan
+   terraform apply
+   
+   
+select * from events;
+select * from jobs;
