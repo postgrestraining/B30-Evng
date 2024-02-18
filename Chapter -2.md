@@ -7,6 +7,11 @@ EC2 -> Launch Instance -> Name: my-inst
 
 ![Minion](https://github.com/postgrestraining/B30-Evng/blob/main/images/EC2-us-east-1.png)
 
+    -> Choose rest of the details -> Launch instance
+
+
+
+
 ```
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
