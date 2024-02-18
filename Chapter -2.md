@@ -131,6 +131,7 @@ Commit complete.
 
 ## Install PostgreSQL Client
 
+```
 dnf install postgresql15.x86_64 postgresql15-server -y
 
 [ec2-user@ip-10-1-1-250 ~]$ sudo su
@@ -141,6 +142,20 @@ dnf install postgresql15.x86_64 postgresql15-server -y
 Complete!
 [root@ip-10-1-1-250 ~]# su - postgres
 [postgres@ip-10-1-1-250 ~]$
+```
+
+## Configure awscli in postgres user
+
+-> Create security credentials and notedown AWS Access Key ID and AWS Secret Access Key
+
+```
+[postgres@ip-10-1-1-250 ~]$ aws configure
+AWS Access Key ID [None]: XXXXXXXX
+AWS Secret Access Key [None]: XXXXXXXX
+Default region name [None]: us-east-1
+Default output format [None]:
+[postgres@ip-10-1-1-250 ~]$
+```
 
 
 
