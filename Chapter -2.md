@@ -200,8 +200,11 @@ aws rds modify-db-cluster \
 --apply-immediately
 ```
 
-
-
+Reboot the cluster 
+```
+aws rds reboot-db-instance --db-instance-identifier  rdsa-postgresql-node-01
+aws rds reboot-db-instance --db-instance-identifier  rdsa-postgresql-node-02
+```
 
 
 [postgres@lab01 aws]$ aws configure
