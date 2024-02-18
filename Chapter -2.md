@@ -27,10 +27,19 @@ Credentials :  browse ppk
 
 ### Install AWSCLI
 
+```
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
 /usr/local/bin/aws --version
+```
+Upon successful installation
+
+```
+[root@ip-10-1-1-250 ~]# /usr/local/bin/aws --version
+aws-cli/2.15.21 Python/3.11.6 Linux/6.1.75-99.163.amzn2023.x86_64 exe/x86_64.amzn.2023 prompt/off
+[root@ip-10-1-1-250 ~]#
+```
 
 ### Configure oracle client
 
@@ -46,6 +55,22 @@ useradd oracle
 su - oracle
 
 sqlplus admin/oracle123@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=orcl.cijxwe4ckz1m.us-east-1.rds.amazonaws.com)(PORT=1521)))(CONNECT_DATA=(SID=ORCL)))
+```
+Upon successful installation you should login to RDS instance
+
+```
+[oracle@ip-10-1-1-250 ~]$ sqlplus admin/oracle123@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=orcl.cijxwe4ckz1m.us-east-1.rds.amazonaws.com)(PORT=1521)))(CONNECT_DATA=(SID=ORCL)))
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Feb 18 17:12:44 2024
+Version 19.19.0.0.0
+
+Copyright (c) 1982, 2022, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Standard Edition 2 Release 19.0.0.0.0 - Production
+Version 19.18.0.0.0
+
 ```
 
 
