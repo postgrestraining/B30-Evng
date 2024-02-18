@@ -71,6 +71,7 @@ Connected to:
 Oracle Database 19c Standard Edition 2 Release 19.0.0.0.0 - Production
 Version 19.18.0.0.0
 
+SQL>
 ```
 
 
