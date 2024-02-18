@@ -129,7 +129,19 @@ Enter value for 4: /home/oracle/
 Commit complete.
 ```
 
-   
+## Install PostgreSQL Client
+
+dnf install postgresql15.x86_64 postgresql15-server -y
+
+[ec2-user@ip-10-1-1-250 ~]$ sudo su
+[root@ip-10-1-1-250 ec2-user]# cd
+[root@ip-10-1-1-250 ~]# dnf install postgresql15.x86_64 postgresql15-server -y
+..
+..
+Complete!
+[root@ip-10-1-1-250 ~]# su - postgres
+[postgres@ip-10-1-1-250 ~]$
+
 
 
 
