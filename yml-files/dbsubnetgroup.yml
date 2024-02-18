@@ -18,7 +18,7 @@ Resources:
   DBSubnetGroup:
     Type: 'AWS::RDS::DBSubnetGroup'
     Properties:
-      DBSubnetGroupDescription: b30-db-subnet-group
+      DBSubnetGroupDescription: my-db-subnet-group
       DBSubnetGroupName: my-db-subnet-group
       SubnetIds: !Split [',', !Ref PublicSubnets] 
       Tags:

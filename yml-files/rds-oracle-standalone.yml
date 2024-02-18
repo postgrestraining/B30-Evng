@@ -26,7 +26,7 @@ Resources:
       MultiAZ: false  # Set to true for Multi-AZ deployment
       VPCSecurityGroups: [!Ref SecurityGroupId]
       PubliclyAccessible: Yes
-      DBSubnetGroupName: b30-db-subnet-group
+      DBSubnetGroupName: my-db-subnet-group
       DBInstanceClass: db.t3.medium
       LicenseModel: bring-your-own-license
 
