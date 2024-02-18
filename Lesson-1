@@ -59,15 +59,22 @@ VPC - Peering
 Automation
 -----------
 
-1. CloudFormation -> vpc.yml -> Stack name:  B30
+1. CloudFormation -> vpc.yml -> Stack name:  B30 -> Next -> Next -> Finish
      
-    - It creates a VPC, subnets, RT, and IGW
-    - Note down comma separated public IPs
-      subnet-08315017b80615731,subnet-06dfb2ebcb70fa187
+    - It creates a VPC (B30-VPC), subnets (B30-SN1, B30-SN2) , RT (B30-RT), and IGW (B30-igw)
+    - Note down comma separated public subnets
+      subnet-0a4b8683b58e9347b,subnet-0d412ac0d03348979
   
-2. CloudFormation -> security-groups.yml -> Stack name: B30-SG, Choose VPC-ID
+2. CloudFormation -> security-groups.yml -> Stack name: B30-SG, Choose VPC-ID -> Next -> Next -> Finish
 
-3. CloudFormation -> rds.yml -> Stakc name: my-rds,
+     - It creates a security Group (B30-SG) 
+
+3. CloudFormation -> dbsubnetgroup.yml -> Stakc name: b30-db-subnet-group 
+     -> Give rest of the details -> Next -> Next -> Finish
+
+     - Go to RDS -> See Subnet Groups -> Check of my-db-subnet-group is created.
+
+3. CloudFormation -> rds.yml -> Stakc name: my-rds, 
     
     DBInstanceName	my-rds
     PublicSubnets	subnet-03892171e1bfafdb4,subnet-020c6fa943225d766
