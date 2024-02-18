@@ -1,5 +1,18 @@
 #Steps for DMS
 
+Prepare Oracle Database for CDC
+```
+as admin user
+
+exec rdsadmin.rdsadmin_util.set_configuration('archivelog retention hours',24);
+exec rdsadmin.rdsadmin_util.alter_supplemental_logging('ADD');
+exec rdsadmin.rdsadmin_util.alter_supplemental_logging('ADD','PRIMARY KEY');
+
+as hr user
+
+select 'ALTER TABLE '||table_name||' ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;' from all_tables where owner = 'HR';
+```
+
 In SCT,
 
 1. add source and target 
