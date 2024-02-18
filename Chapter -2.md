@@ -9,15 +9,27 @@ EC2 -> Launch Instance -> Name: my-inst
 
     -> Choose rest of the details -> Launch instance
 
+## Login to the instance and do the following
+
+    1. Set up AWSCLI
+    2. Install Oracle Client
+    3. Install PostgreSQL
+    4. Setup postgres user environment variables
+    5. Login as oracle user and create hr schema in AWS Oracle RDS instance
+
+In Putty -> 
+username : ec2-user@ec2-3-88-113-43.compute-1.amazonaws.com  
+Credentials :  browse ppk
+
+    
 
 
 
-```
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
-```
+
 
 
 
