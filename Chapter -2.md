@@ -206,11 +206,4 @@ aws rds reboot-db-instance --db-instance-identifier  rdsa-postgresql-node-01
 ```
 
 
-[postgres@lab01 aws]$ aws configure
-AWS Access Key ID [****************X6HF]: AKIA3TW7NMA
-AWS Secret Access Key [****************KpaT]: x4Fon9VH6kGGViCxIqP
-Default region name [us-east-1]:
-Default output format [None]:
-[postgres@lab01 aws]$
 
-yum install jq
