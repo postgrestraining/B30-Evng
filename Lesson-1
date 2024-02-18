@@ -74,7 +74,7 @@ Automation
 
      - Go to RDS -> See Subnet Groups -> Check of my-db-subnet-group is created.
 
-3. CloudFormation -> rds.yml -> Stakc name: my-rds, 
+3*. CloudFormation -> rds.yml -> Stakc name: my-rds, [OPTIONAL]
     
     DBInstanceName	my-rds
     PublicSubnets	subnet-03892171e1bfafdb4,subnet-020c6fa943225d766
@@ -87,19 +87,18 @@ Automation
    
    rdsa-postgresql-db-subnet-group
    
-4. CloudFormation -> aurora-cluster-dbgroup-hard-code.yml -> Stakc name: my-aurora
+4. CloudFormation -> postgres-cluster-dbgroup-hard-code.yml -> Stakc name: my-aurora
     ###please open aurora-cluster-dbgroup-hard-code.yml and make sure the 
     ###hardcoded "subnetgroup" matches with existing subnet group created with above step
     ###RDS -> Subnet groups -> check
   
-    DBEngineVersion	        15.3
-    DBInstanceClass	        db.t3.medium
-    DBMasterUsername	    postgres
-    DBMasterUserPassword	postgres
-    PublicSubnets	        subnet-03892171e1bfafdb4,subnet-020c6fa943225d766
-    RdsAuroraVPC	        vpc-0ef9e9bf683477c6c
-    TemplateName	        rdsa-postgresql
-    VPCSecurityGroupCluster	sg-02bcfb5e65d932650  
+     DBEngineVersion	15.3
+     DBInstanceClass	db.t3.medium
+     DBMasterUsername	postgres
+     DBMasterUserPassword	postgres
+     RdsAuroraVPC	vpc-0256ad07c6ecf51e3
+     TemplateName	rdsa-postgresql
+     VPCSecurityGroupCluster	sg-036245adc952ca77c
    
     # it creates 
         i) aurora cluster with name "rdsa-postgresql-cluster" 
