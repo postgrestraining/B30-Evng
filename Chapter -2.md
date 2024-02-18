@@ -32,7 +32,21 @@ unzip awscliv2.zip
 sudo ./aws/install
 /usr/local/bin/aws --version
 
+### Configure oracle client
 
+```
+wget https://yum.oracle.com/RPM-GPG-KEY-oracle-ol8 -O /etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+
+dnf install https://download.oracle.com/otn_software/linux/instantclient/1919000/oracle-instantclient19.19-basic-19.19.0.0.0-1.el9.x86_64.rpm
+
+dnf install https://download.oracle.com/otn_software/linux/instantclient/1919000/oracle-instantclient19.19-sqlplus-19.19.0.0.0-1.el9.x86_64.rpm
+
+useradd oracle
+su - oracle
+
+sqlplus admin/oracle123@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=orcl.cijxwe4ckz1m.us-east-1.rds.amazonaws.com)(PORT=1521)))(CONNECT_DATA=(SID=ORCL)))
+```
 
 
 
