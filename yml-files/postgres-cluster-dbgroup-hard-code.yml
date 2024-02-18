@@ -24,11 +24,6 @@ Parameters:
     Type: AWS::EC2::VPC::Id
     Description: Main VPC id
 
-  # Subnets for the cluster
-  PublicSubnets:
-    Type: String
-    Description: Comma Separated IDs of a Public subnets for RDS PG.
-
   # Does NOT list all allowed values - please check documentation
   # Version dependencies, db.r3 not available for PG
   # db.r6g.large available only for "12.4 and higher, 11.9 and higher"
@@ -102,7 +97,7 @@ Resources:
       Engine: aurora-postgresql
       EngineVersion : !Ref DBEngineVersion
       Port: 5432
-      DBSubnetGroupName: b30-db-subnet-group
+      DBSubnetGroupName: my-db-subnet-group
       BackupRetentionPeriod: 7
       MasterUsername: !Ref DBMasterUsername
       MasterUserPassword: !Ref DBMasterUserPassword
