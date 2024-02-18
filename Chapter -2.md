@@ -203,7 +203,6 @@ aws rds modify-db-cluster \
 Reboot the cluster 
 ```
 aws rds reboot-db-instance --db-instance-identifier  rdsa-postgresql-node-01
-aws rds reboot-db-instance --db-instance-identifier  rdsa-postgresql-node-02
 ```
 
 
