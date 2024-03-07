@@ -50,8 +50,8 @@ postgres=>
 
 In DMS,
 
-1. DMS -> Subnet groups -> Create -> Name: b30-replication-subnet-group
-2. Replication instances -> Create -> Name: b30-replication, Instance Class -> t3.medium
+1. DMS -> Subnet groups -> Create -> Name: pg-replication-subnet-group
+2. Replication instances -> Create -> Name: pg-replication, Instance Class -> t3.medium
 3. Create source endpoint -> Most of the details are auto populated and Test endpoint connection
 4. Create target endpoint -> SSL Socket layer mode -> Require;  Most of the details are auto populated and Test endpoint connection
 5. Select Source -> Schemas -> Refresh to populate schemas
