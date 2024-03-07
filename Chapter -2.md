@@ -164,7 +164,7 @@ Default output format [None]:
 ```
 cd /home/postgres/B30-Evng-main/db
 sh setup-env.sh us-east-1
-sh set-endpoints.sh rdsa-postgresql-cluster
+sh set-endpoints.sh pg-rdsa-cluster
 
 Sample output should look like and look for entries in /home/postgres/.bashrc
 
