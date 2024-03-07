@@ -180,29 +180,29 @@ DB instance parameter group:  default.aurora-postgresql15
 DB cluster parameter group: default.aurora-postgresql15
 
 ```
-export PG_CLUSTER_ID=rdsa-postgresql-cluster
-sh create-custom-db-cluster-pg.sh rdsa-cluster-pg-cluster my-cluster-parameter-group
-sh create-custom-db-pg.sh rdsa-instance-pg my-parameter-group
-sh set-parameter-value.sh rdsa-cluster-pg-cluster session_replication_role replica
+export PG_CLUSTER_ID=pg-rdsa-cluster
+sh create-custom-db-cluster-pg.sh pg-rdsa-cluster-pg pg-rdsa-cluster-pg
+sh create-custom-db-pg.sh pg-rdsa-instance-pg pg-rdsa-instance-pg
+sh set-parameter-value.sh pg-rdsa-cluster-pg session_replication_role replica
 ```
 
 ## apply changes
 
 ```
 aws rds modify-db-instance \
---db-instance-identifier  rdsa-postgresql-node-01 \
---db-parameter-group-name rdsa-instance-pg \
+--db-instance-identifier  pg-rdsa-node-01 \
+--db-parameter-group-name pg-rdsa-instance-pg \
 --apply-immediately
 
 aws rds modify-db-cluster \
---db-cluster-identifier rdsa-postgresql-cluster \
---db-cluster-parameter-group-name rdsa-cluster-pg-cluster \
+--db-cluster-identifier pg-rdsa-cluster \
+--db-cluster-parameter-group-name pg-rdsa-cluster-pg \
 --apply-immediately
 ```
 
 Reboot the cluster 
 ```
-aws rds reboot-db-instance --db-instance-identifier  rdsa-postgresql-node-01
+aws rds reboot-db-instance --db-instance-identifier  pg-rdsa-node-01
 ```
 
 
