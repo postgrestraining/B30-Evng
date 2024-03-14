@@ -184,6 +184,7 @@ export PG_CLUSTER_ID=pg-rdsa-cluster
 sh create-custom-db-cluster-pg.sh pg-rdsa-cluster-pg pg-rdsa-cluster-pg
 sh create-custom-db-pg.sh pg-rdsa-instance-pg pg-rdsa-instance-pg
 sh set-parameter-value.sh pg-rdsa-cluster-pg session_replication_role replica
+sh set-instance-parameter-value.sh pg-rdsa-instance-pg session_replication_role replica
 ```
 
 ## apply changes
